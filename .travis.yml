@@ -1,0 +1,17 @@
+sudo: required
+services:
+- docker
+language: bash
+script:
+# prepare qemu
+- docker run --rm --privileged multiarch/qemu-user-static:register --reset
+# build image
+- docker build -t local/tensorflow_serving_tools_docker:build - < ./Dockerfile
+# test image
+- docker run local/tensorflow_serving_tools_docker:build uname -a
+# push image
+- >
+  TAG=$(grep "FROM " Dockerfile | sed 's/.*://')
+  docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
+  docker tag local/tensorflow_serving_tools_docker:build "$DOCKER_USER/tensorflow_serving_tools_docker:$TAG"
+  docker push "$DOCKER_USER/tensorflow_serving_tools_docker:$TAG"

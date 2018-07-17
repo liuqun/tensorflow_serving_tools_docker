@@ -13,6 +13,8 @@
 # limitations under the License.
 FROM arm32v7/ubuntu:16.04
 
+ADD https://github.com/multiarch/qemu-user-static/releases/download/v2.12.0/qemu-arm-static.tar.gz /usr/bin/qemu-arm-static
+
 LABEL maintainer="gvasudevan@google.com"
 
 RUN apt-get update && apt-get install -y \
