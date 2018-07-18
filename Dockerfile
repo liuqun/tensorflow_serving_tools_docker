@@ -11,9 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-FROM arm32v7/ubuntu:16.04
-
-ADD --chown=root:root --chmod=755 https://github.com/multiarch/qemu-user-static/releases/download/v2.6.0/qemu-arm-static.tar.gz /usr/bin/qemu-arm-static
+FROM multiarch/ubuntu-debootstrap:armhf-xenial
 
 LABEL maintainer="gvasudevan@google.com"
 
