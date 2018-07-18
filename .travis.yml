@@ -1,0 +1,28 @@
+sudo: required
+services:
+  - docker
+language: bash
+install:
+  # Download qemu-arm-static.tar.gz, checksum and unzip the tarball
+  - mkdir -p download && pushd download
+  - curl --show-error -L https://github.com/multiarch/qemu-user-static/releases/download/v2.12.0/qemu-arm-static.tar.gz
+      | tee >(tar xzf -) | sha256sum | grep -q "6e1784acb048e518980d24538d2c78c4a07514ea4a9e29fccf53e28c49232029"
+  - popd
+  # Prepare qemu in Travis CI build bot
+  - docker run --rm --privileged multiarch/qemu-user-static:register --reset
+  # Build docker image
+  - mkdir -p build && pushd build
+  - cp -R ../download ../Dockerfile ../README.md ./
+  - echo "download/README.md" > ./.dockerignore
+  - docker build -t local/tensorflow_serving_tools_docker:build -f Dockerfile .
+  - popd
+script:
+  # Push image
+  - >
+    if [ x"$DOCKER_USER" != x ] && [ x"$DOCKER_PASS" != x ]; then
+      TAG=$(grep "FROM " Dockerfile | sed 's/.*://')
+      docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
+      docker tag local/tensorflow_serving_tools_docker:build "$DOCKER_USER/tensorflow_serving_tools_docker:$TAG"
+      docker push "$DOCKER_USER/tensorflow_serving_tools_docker:$TAG"
+    fi
+  - echo "Done!"
