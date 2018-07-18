@@ -10,7 +10,7 @@ install:
 script:
   # push image
   - >
-    if [ x"$DOCKER_USER" != x && x"$DOCKER_PASS" != x ]; then
+    if [ x"$DOCKER_USER" != x ] && [ x"$DOCKER_PASS" != x ]; then
       TAG=$(grep "FROM " Dockerfile | sed 's/.*://')
       docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
       docker tag local/tensorflow_serving_tools_docker:build "$DOCKER_USER/tensorflow_serving_tools_docker:$TAG"
@@ -18,4 +18,4 @@ script:
       docker push "$DOCKER_USER/tensorflow_serving_tools_docker:$TAG"
       docker push "$DOCKER_USER/tensorflow_serving_tools_docker:latest-$TAG"
     fi
-  - echo "Done!"
+    echo "Done!"
